@@ -158,7 +158,7 @@ public class MainActivity extends Activity implements SensorEventListener{
 				File fullpath;
 				String foldername, filename;
 				foldername = "barolog";
-				filename = "barologPressureLog.txt";
+				filename = "barologPressureLog.csv";
 
 				//Сохранение файла на External Storage:
 					fullpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);

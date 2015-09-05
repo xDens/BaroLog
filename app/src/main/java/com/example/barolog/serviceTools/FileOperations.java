@@ -41,10 +41,7 @@ public class FileOperations {
             //dir.setExecutable(true);
             dir.setReadable(true);
             dir.setWritable(true);
-            //MediaScannerConnection.scanFile(context, new String[]{dir.toString()}, null, null);
-// initiate media scan and put the new things into the path array to
-// make the scanner aware of the location and the files you want to see
-
+            MediaScannerConnection.scanFile(context, new String[]{dir.toString()}, null, null);
 
             File file = new File(dir, filename);
             file.createNewFile();
@@ -54,7 +51,7 @@ public class FileOperations {
             myOutWriter.close();
             fOut.close();
 
-            MediaScannerConnection.scanFile(context, new String[]{dir.toString() + "/*"}, null, null);
+            //MediaScannerConnection.scanFile(context, new String[]{dir.toString() + "/*"}, null, null);
 
 
         }
