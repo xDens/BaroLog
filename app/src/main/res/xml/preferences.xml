@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="@string/units"
+        android:title="@string/pressureMeasureSettingsTitle"
+        android:summary="@string/pressureMeasureSettingsSummary"
+        android:defaultValue="1"
+        android:entries="@array/measure_units"
+        android:entryValues="@array/measure_units"
+        android:dialogTitle="@string/pressureMeasureSettingsDialogTitle" />
+
+    <ListPreference
+        android:key="@string/pressureMeasureInterval"
+        android:title="@string/pressureMeasureIntervalSettingsTitle"
+        android:summary="@string/pressureMeasureIntervalSettingsSummary"
+        android:defaultValue="1"
+        android:entries="@array/interval_array"
+        android:entryValues="@array/interval_array"
+        android:dialogTitle="@string/pressureMeasureIntervalSettingsDialogTitle" />
+
+    <Preference
+        android:key="clearDatabase"
+        android:summary="Delete all stored pressure values"
+        android:title="Clear database"/>
+</PreferenceScreen>
