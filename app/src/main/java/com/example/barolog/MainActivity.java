@@ -1,34 +1,24 @@
 package com.example.barolog;
 
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaScannerConnection;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.os.Build;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
@@ -37,8 +27,9 @@ import com.example.barolog.serviceTools.FileOperations;
 import com.example.barolog.serviceTools.ServiceTools;
 
 import java.io.File;
-import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends Activity implements SensorEventListener{
 	private Button btnStartStop;
@@ -53,9 +44,7 @@ public class MainActivity extends Activity implements SensorEventListener{
 	private DatabaseHelper mDBHelper;
 	private SQLiteDatabase mDB;
 
-
-    private double multiplier = 1.0;
-    private String currentUnits = "";
+	private String currentUnits = "";
 
 	private ArrayList<String> values;
 
@@ -121,7 +110,7 @@ public class MainActivity extends Activity implements SensorEventListener{
 							.getColumnIndex(DatabaseHelper.PRESSURE_MEASUREMENT_TIME_COLUMN));
 					String value = cursor.getString(cursor
 							.getColumnIndex(DatabaseHelper.PRESSURE_VALUE_COLUMN));
-					tmp += "TIME: " + time + " VALUE: " + value + "\n";
+					tmp += "TIME: " + time + " VALUE: " + ServiceTools.convertHPaUnits(Float.valueOf(value), currentUnits) + "\n";
 					values.add(tmp);
 				}
 
@@ -136,7 +125,7 @@ public class MainActivity extends Activity implements SensorEventListener{
 		btnExportToCSV.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				String pressureTimeValues = "Time,Value\n";
+				String pressureTimeValues = "Time,Pressure\n";
 
 				String query = "SELECT " + DatabaseHelper._ID + ", " + DatabaseHelper.PRESSURE_MEASUREMENT_TIME_COLUMN + ", "
 						+ DatabaseHelper.PRESSURE_VALUE_COLUMN + " FROM "
@@ -152,14 +141,14 @@ public class MainActivity extends Activity implements SensorEventListener{
 					String value = cursor.getString(cursor
 							.getColumnIndex(DatabaseHelper.PRESSURE_VALUE_COLUMN));
 
-					pressureTimeValues += time + "," + value + "\n";
+					pressureTimeValues += time + "," + ServiceTools.convertHPaUnits(Float.valueOf(value), currentUnits)	 + "\n";
 				}
 
-				File fullpath;
-				String filename;
-				filename = "barologPressureLog.csv";
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HHmmss");
+				Date now = new Date();
+				String filename = "barolog" + formatter.format(now) + ".csv";
 
-				fullpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+				File fullpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
 
 				if (FileOperations.isExternalStorageWritable())
 				{
@@ -180,16 +169,6 @@ public class MainActivity extends Activity implements SensorEventListener{
 	    mSensorManager.registerListener(this, mPressure, SensorManager.SENSOR_DELAY_NORMAL);
 
         currentUnits = ServiceTools.getCurrentUnits(this);
-
-        if (currentUnits.contains(BasicConst.MeasureUnits.MMHG)) {
-            multiplier = BasicConst.MeasureUnits.MMHG_MULTIPLIER;
-        }
-        else if (currentUnits.contains(BasicConst.MeasureUnits.HPA)) {
-            multiplier = 1.0;
-        }
-        else {
-            multiplier = 1.0;
-        }
 
 		//check if service is already running;
 		if (ServiceTools.isMyServiceRunning(PressureMonitorService.class, this.getApplicationContext())) {
@@ -213,9 +192,8 @@ public class MainActivity extends Activity implements SensorEventListener{
 
 	  @Override
 	  public final void onSensorChanged(SensorEvent event) {
-        DecimalFormat df = new DecimalFormat("###.##");
 	    float millibars_of_pressure = event.values[0];
-	    txtSensorData.setText(String.valueOf(df.format(millibars_of_pressure * multiplier)) + " " + currentUnits);
+	    txtSensorData.setText(ServiceTools.convertHPaUnits(millibars_of_pressure, currentUnits) + " " + currentUnits);
 	  }
 
 

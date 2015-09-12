@@ -6,8 +6,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.example.barolog.MainActivity;
 import com.example.barolog.R;
+import com.example.barolog.constants.BasicConst;
+
+import java.text.DecimalFormat;
 
 
 /**
@@ -28,7 +30,22 @@ public class ServiceTools {
 
     public static String getCurrentUnits(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String currentUnits = prefs.getString(context.getResources().getString(R.string.units), "");
-        return currentUnits;
+        return prefs.getString(context.getResources().getString(R.string.units), "");
+    }
+
+    public static String convertHPaUnits(float hPaPressureValue, String measureUnitToConvert) {
+        DecimalFormat df = new DecimalFormat("###.##");
+        double convertedValue;
+
+        if (measureUnitToConvert.contains(BasicConst.MeasureUnits.MMHG)) {
+            convertedValue = hPaPressureValue * BasicConst.MeasureUnits.MMHG_MULTIPLIER;
+        }
+        else if (measureUnitToConvert.contains(BasicConst.MeasureUnits.HPA)) {
+            convertedValue = hPaPressureValue;
+        }
+        else {
+            convertedValue = hPaPressureValue;
+        }
+        return String.valueOf(df.format(convertedValue));
     }
 }
