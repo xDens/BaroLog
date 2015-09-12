@@ -156,13 +156,11 @@ public class MainActivity extends Activity implements SensorEventListener{
 				}
 
 				File fullpath;
-				String foldername, filename;
-				foldername = "barolog";
+				String filename;
 				filename = "barologPressureLog.csv";
 
-				//Сохранение файла на External Storage:
-					fullpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-						//+ "/" + foldername;
+				fullpath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+
 				if (FileOperations.isExternalStorageWritable())
 				{
 					FileOperations.SaveFile(fullpath, filename, MainActivity.this, pressureTimeValues);
@@ -181,8 +179,7 @@ public class MainActivity extends Activity implements SensorEventListener{
 	    super.onResume();
 	    mSensorManager.registerListener(this, mPressure, SensorManager.SENSOR_DELAY_NORMAL);
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        currentUnits = prefs.getString(getString(R.string.units), "");
+        currentUnits = ServiceTools.getCurrentUnits(this);
 
         if (currentUnits.contains(BasicConst.MeasureUnits.MMHG)) {
             multiplier = BasicConst.MeasureUnits.MMHG_MULTIPLIER;

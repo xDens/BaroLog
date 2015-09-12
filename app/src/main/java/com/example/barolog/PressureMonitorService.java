@@ -24,7 +24,7 @@ import java.util.TimerTask;
 
 public class PressureMonitorService extends Service implements SensorEventListener {
     private static final long DEFAULT_INTERVAL = 15 * 60 * 1000; //15 minutes;
-    public static final double MMHG_MULTIPLIER = 0.75006375541921;
+    public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
 
     private Sensor mPressure;
     private SensorManager mSensorManager;
@@ -134,7 +134,7 @@ public class PressureMonitorService extends Service implements SensorEventListen
         //store value in DB:
         ContentValues newValues = new ContentValues();
 
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
         Date date = new Date();
         newValues.put(DatabaseHelper.PRESSURE_MEASUREMENT_TIME_COLUMN, dateFormat.format(date));
         newValues.put(DatabaseHelper.PRESSURE_VALUE_COLUMN, String.valueOf(df.format(millibars_of_pressure)));

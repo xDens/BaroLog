@@ -2,7 +2,12 @@ package com.example.barolog.serviceTools;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.example.barolog.MainActivity;
+import com.example.barolog.R;
 
 
 /**
@@ -19,5 +24,11 @@ public class ServiceTools {
         }
         Log.i("Service not","running");
         return false;
+    }
+
+    public static String getCurrentUnits(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String currentUnits = prefs.getString(context.getResources().getString(R.string.units), "");
+        return currentUnits;
     }
 }

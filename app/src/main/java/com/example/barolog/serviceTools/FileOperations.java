@@ -1,6 +1,5 @@
 package com.example.barolog.serviceTools;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
@@ -11,9 +10,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.barolog.MainActivity;
 
 /**
  * Created by xDens on 8/30/15.
@@ -37,23 +34,23 @@ public class FileOperations {
         try {
             if (!dir.exists()) dir.mkdirs();
 
-            // fix
-            //dir.setExecutable(true);
             dir.setReadable(true);
             dir.setWritable(true);
-            MediaScannerConnection.scanFile(context, new String[]{dir.toString()}, null, null);
 
             File file = new File(dir, filename);
             file.createNewFile();
+
+            file.setReadable(true);
+            file.setWritable(true);
+
             FileOutputStream fOut = new FileOutputStream(file);
             OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
             myOutWriter.write(fileContent);
             myOutWriter.close();
             fOut.close();
 
-            //MediaScannerConnection.scanFile(context, new String[]{dir.toString() + "/*"}, null, null);
-
-
+            MediaScannerConnection.scanFile(context, new String[]{file.getAbsolutePath()}, null, null);
+            MediaScannerConnection.scanFile(context, new String[]{dir.getAbsolutePath()}, null, null);
         }
         catch (IOException e) {
             Log.e(e.toString(), "SaveFile");
