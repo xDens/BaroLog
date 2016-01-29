@@ -11,12 +11,21 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.barolog.MainActivity$PlaceholderFragment" >
 
-<TextView android:id="@+id/txtSensorData"
-       android:textSize="40sp"
-       android:background="@drawable/shape"
-       android:typeface="sans"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"/>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape">
+    <TextView android:id="@+id/txtSensorData"
+        android:textSize="40sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:typeface="sans"
+        android:singleLine="true" />
+</RelativeLayout>
 
 <Space android:layout_height="20dp" android:layout_width="wrap_content"/>
 
@@ -25,7 +34,7 @@
      android:layout_width="match_parent"
      android:layout_height="wrap_content"/>
 
-<Button android:id="@+id/btnCheckDBState"
+    <Button android:id="@+id/btnCheckDBState"
     android:text="Check DB State"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"/>

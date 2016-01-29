@@ -1,6 +1,7 @@
 package com.example.barolog.serviceTools;
 
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -47,5 +48,30 @@ public class ServiceTools {
             convertedValue = hPaPressureValue;
         }
         return String.valueOf(df.format(convertedValue));
+    }
+
+    public static long getSelectedInterval(Context context) {
+        long intervalValue;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String            timerInterval = prefs.getString(context.getResources().getString(R.string.pressureMeasureInterval), "");
+        String[]          intervalValues = context.getResources().getStringArray(R.array.interval_array);
+
+        try {
+            if (timerInterval.contains(intervalValues[0])) {
+                intervalValue = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+            } else if (timerInterval.contains(intervalValues[1])) {
+                intervalValue = AlarmManager.INTERVAL_HALF_HOUR;
+            } else if (timerInterval.contains(intervalValues[2])) {
+                intervalValue = AlarmManager.INTERVAL_HOUR;
+            } else {
+                intervalValue = 30 * 1000;
+            }
+        } catch (NullPointerException err) {
+            intervalValue = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+        }
+
+        Log.i("Setting:", Long.toString(intervalValue));
+        return intervalValue;
+
     }
 }

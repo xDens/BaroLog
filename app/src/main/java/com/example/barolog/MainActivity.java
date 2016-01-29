@@ -3,6 +3,7 @@ package com.example.barolog;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
@@ -31,7 +32,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+
 public class MainActivity extends Activity implements SensorEventListener{
+    public static final String APP_PREFERENCES = "barolog_settings";
+
 	private Button btnStartStop;
 	private Button btnExportToCSV;
 	private TextView txtSensorData;
@@ -39,10 +43,13 @@ public class MainActivity extends Activity implements SensorEventListener{
 	private SensorManager mSensorManager;
 	private ListView viewValues;
 	private ArrayAdapter mAdapter;
+    private SharedPreferences sp;
 
 	private Button btnCheckDBState;
 	private DatabaseHelper mDBHelper;
 	private SQLiteDatabase mDB;
+
+	private AlarmManagerBroadCastReceiver alarmManager;
 
 	private String currentUnits = "";
 
@@ -52,10 +59,14 @@ public class MainActivity extends Activity implements SensorEventListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		txtSensorData = (TextView) findViewById(R.id.txtSensorData);
+
+        sp = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE);
+
+        txtSensorData = (TextView) findViewById(R.id.txtSensorData);
 
 		viewValues = (ListView) findViewById(R.id.viewValues);
+
+		alarmManager = new AlarmManagerBroadCastReceiver();
 
 		mSensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
 		if (mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE) != null){
@@ -69,24 +80,30 @@ public class MainActivity extends Activity implements SensorEventListener{
 		mDBHelper = new DatabaseHelper(this, DatabaseHelper.DATABASE_NAME, null, 1);
 		mDB = mDBHelper.getReadableDatabase();
 		
-		//fill timer spinner with necessary data;																					
-		/*ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.interval_array, android.R.layout.simple_spinner_item);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		
-		Spinner cmbTimings = (Spinner) this.findViewById(R.id.cmbPeriod);
-		cmbTimings.setAdapter(adapter);*/
-		
 		btnStartStop = (Button) this.findViewById(R.id.btnStartStop);
 		btnStartStop.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (btnStartStop.getText() == getResources().getText(R.string.start) ) {
 					btnStartStop.setText(R.string.stop);
+
 					startService(new Intent(MainActivity.this, PressureMonitorService.class));
-				} 
+
+                    SharedPreferences.Editor e = sp.edit();
+                    e.putBoolean("hasStarted", true);
+                    e.commit();
+				}
 				else {
 					btnStartStop.setText(R.string.start);
-					stopService(new Intent(MainActivity.this, PressureMonitorService.class));
+                    if (ServiceTools.isMyServiceRunning(PressureMonitorService.class, getApplicationContext())) {
+                        stopService(new Intent(MainActivity.this, PressureMonitorService.class));
+                    }
+
+                    alarmManager.CancelAlarm(getApplicationContext());
+
+                    SharedPreferences.Editor e = sp.edit();
+                    e.putBoolean("hasStarted", false);
+                    e.commit();
 				}
 			}
 		});
@@ -160,6 +177,7 @@ public class MainActivity extends Activity implements SensorEventListener{
 				}
 			}
 		});
+
 	}
 
 	
@@ -171,7 +189,13 @@ public class MainActivity extends Activity implements SensorEventListener{
         currentUnits = ServiceTools.getCurrentUnits(this);
 
 		//check if service is already running;
-		if (ServiceTools.isMyServiceRunning(PressureMonitorService.class, this.getApplicationContext())) {
+		/*if (ServiceTools.isMyServiceRunning(PressureMonitorService.class, this.getApplicationContext())) {
+			btnStartStop.setText(R.string.stop);
+		} else {
+			btnStartStop.setText(R.string.start);
+		}*/
+
+        if (sp.getBoolean("hasStarted", false)) {
 			btnStartStop.setText(R.string.stop);
 		} else {
 			btnStartStop.setText(R.string.start);
