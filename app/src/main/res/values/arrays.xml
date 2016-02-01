@@ -9,5 +9,6 @@
     <string-array name="measure_units">
         <item>mmHg</item>
         <item>hPa</item>
+        <item>atm</item>
     </string-array>
 </resources>

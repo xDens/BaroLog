@@ -44,6 +44,9 @@ public class ServiceTools {
         else if (measureUnitToConvert.contains(BasicConst.MeasureUnits.HPA)) {
             convertedValue = hPaPressureValue;
         }
+        else if (measureUnitToConvert.contains(BasicConst.MeasureUnits.ATM)) {
+            convertedValue = hPaPressureValue / BasicConst.MeasureUnits.ATM_DIVIDER;
+        }
         else {
             convertedValue = hPaPressureValue;
         }

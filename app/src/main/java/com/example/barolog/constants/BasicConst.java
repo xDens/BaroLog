@@ -12,6 +12,7 @@ public final class BasicConst {
         public static final String ATM = "atm";
 
         public static final double MMHG_MULTIPLIER = 0.75006375541921;
+        public static final double ATM_DIVIDER = 1013.25;
 
         private MeasureUnits() {}
     }
